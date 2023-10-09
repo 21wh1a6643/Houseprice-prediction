@@ -1,0 +1,102 @@
+df = pd.read_csv("/content/data.csv")
+
+df.head()
+
+df.info()
+
+df.describe()
+
+df.isnull().sum()
+
+df.shape
+
+import warnings
+
+
+warnings.filterwarnings('ignore')
+sns.distplot(df['price'], hist = False, kde = True,
+                 kde_kws = {'shade': True, 'linewidth': 3})
+plt.xlabel("count")
+plt.ylabel("Density")
+plt.title("Density of price")
+plt.legend("Price")
+plt.show()
+
+bed=[1,2,3,4,5,6]
+# Iterate through the five airlines
+for i in bed:
+    # Subset to the airline
+    subset = df[df['bedrooms'] == i]
+
+    # Draw the density plot
+    sns.distplot(subset['price'], hist = False, kde = True,
+                 kde_kws = {'linewidth': 3},
+                 label = i)
+
+# Plot formatting
+plt.legend(prop={'size': 16}, title = 'bedroom')
+plt.title('Density Plot with Multiple Airlines')
+plt.xlabel('Delay (min)')
+plt.ylabel('Density')
+
+bedrooms=df['bedrooms'].value_counts()
+bedrooms
+
+import plotly.express as px
+
+fig = px.pie(df , values='price', names ='bedrooms')
+fig.show()
+
+new_df=df.copy()
+new_df.head(2)
+
+new_df=new_df.drop(['date','street','statezip'],axis=1)
+
+print(" new shape of datasets",new_df.shape)
+new_df.head()
+
+b=(new_df.columns)
+
+new_df['city']=pd.factorize(new_df['city'])[0]
+new_df['country']=pd.factorize(new_df['city'])[0]
+
+from sklearn.preprocessing import StandardScaler
+
+
+a=StandardScaler()
+
+
+new_df=a.fit_transform(new_df)
+
+
+new_df=pd.DataFrame(new_df,columns=b)
+
+
+new_df
+
+x=new_df.drop('price',axis=1)
+y=new_df[['price']]
+
+from sklearn.model_selection import train_test_split
+
+
+x_train,x_test,y_train,y_test=train_test_split(x,y)
+
+**Linear Regression**
+
+
+from sklearn.linear_model import LinearRegression
+slr = LinearRegression()
+slr.fit(x_train, y_train)
+
+
+y_pred= slr.predict(x_test)
+
+y_pred.shape
+y_test.shape
+
+print("Intercept: ", slr.intercept_)
+print("Coefficient: ", slr.coef_)
+
+slr.score(x_test,y_test)
+
